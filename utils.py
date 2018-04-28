@@ -24,6 +24,19 @@ def bbox_iou_new(box1, box2):
     my = torch.min(box1[1]-box1[3].div(2), box2[1]-box2[3].div(2))
     My = torch.max(box1[1]+box1[3].div(2), box2[1]+box2[3].div(2))
 
+    msx = torch.min(box1[0]+box1[2].div(2), box2[0]+box2[2].div(2))
+    Msx = torch.max(box1[0]-box1[2].div(2), box2[0]-box2[2].div(2))
+    msy = torch.min(box1[1]+box1[3].div(2), box2[1]+box2[3].div(2))
+    Msy = torch.max(box1[1]-box1[3].div(2), box2[1]-box2[3].div(2))
+
+    if not (Mx>Msx & My > Msy):
+        return 0.0
+
+    w1, h1 = box1[2], box1[3]
+    w2, h2 = box2[2], box2[3]
+    insect_area = (msx - Msx)* (msy - Msy)
+    uni_area = w1*h1 + w2*h2 - insect_area
+    return insect_area/uni_arae
 def bbox_iou(box1, box2, x1y1x2y2=True):
     if x1y1x2y2:
         mx = min(box1[0], box2[0])
