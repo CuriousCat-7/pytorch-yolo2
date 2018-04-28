@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-
 class DarkNet19(nn.Module):
     def __init__(self, num_classes=20, anchors=None):
         super(DarkNet19,self).__init__()
@@ -86,7 +85,6 @@ class DarkNet19(nn.Module):
         return x
 
     def forward(self, x):
-        img_size = [ x.size(2), x.size(3)]
         x = self.block1(x)
         x1 = x
         x = self.block2(x)
@@ -95,6 +93,8 @@ class DarkNet19(nn.Module):
         x = self.yolo(x) # bx125x13x13
         #x = F.avg_pool2d(x, (img_size[0]/32, img_size[1]/32))
         #x = x.squeeze(-1).squeeze(-1)
+        size = x.size()
+        x = x.view(size[0], self.num_anchors, -1, x.size[-2], x.size[-1])
         return x
 
 
@@ -103,4 +103,16 @@ if __name__ == "__main__":
     print net
     a = torch.rand(4,3,416,416)
     print net(a).shape
+    from region_loss import RegionLoss
+    from dataset import listDataset
+    filepath = '/data/limingyao/data/VOC/voc_train.txt'
+    from torchvision import transforms
+    dataset = listDataset(filepath, shape=(416,416), transform=transforms.ToTensor(), train=True, batch_size=8, num_workers=8)
+    train_loader = torch.utils.data.DataLoader(dataset, batch_size = 8, shuffle=False, num_workers=8, pin_memory=True)
+    idx, (img, label) = enumerate(train_loader).next()
+    reginLoss = RegionLoss(num_classes = 20, anchors=net.anchors, num_anchors=5)
+    out = net(img)
+    loss = reginLoss(out, label)
+    print loss
+
 
