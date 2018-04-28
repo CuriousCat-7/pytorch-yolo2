@@ -18,6 +18,11 @@ def softmax(x):
     x = x/x.sum()
     return x
 
+def bbox_iou_new(box1, box2):
+    mx = torch.min(box1[0]-box1[2].div(2), box2[0]-box2[2].div(2))
+    Mx = torch.max(box1[0]+box1[2].div(2), box2[0]+box2[2].div(2))
+    my = torch.min(box1[1]-box1[3].div(2), box2[1]-box2[3].div(2))
+    My = torch.max(box1[1]+box1[3].div(2), box2[1]+box2[3].div(2))
 
 def bbox_iou(box1, box2, x1y1x2y2=True):
     if x1y1x2y2:
