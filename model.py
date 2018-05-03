@@ -7,7 +7,7 @@ class DarkNet19(nn.Module):
         if not anchors:
             self.anchors = [1.08,1.19,  3.42,4.41,  6.63,11.38,  9.42,5.11,  16.62,10.52]
         else:
-            self.anchors = anchors 
+            self.anchors = anchors
         self.num_anchors = len(self.anchors)/2
         self.num_classes = num_classes
         self.num_output = (self.num_classes + 5)*self.num_anchors
@@ -94,15 +94,13 @@ class DarkNet19(nn.Module):
         #x = F.avg_pool2d(x, (img_size[0]/32, img_size[1]/32))
         #x = x.squeeze(-1).squeeze(-1)
         size = x.size()
-        x = x.view(size[0]*self.num_anchors, -1, size[-2], size[-1])
+        x = x.view(size[0],  -1, size[-2], size[-1])
         return x
 
 
 if __name__ == "__main__":
     net = DarkNet19()
     print net
-    a = torch.rand(4,3,416,416)
-    print net(a).shape
     from region_loss import RegionLoss
     from dataset import listDataset
     filepath = '/data/limingyao/data/VOC/voc_train.txt'
@@ -110,6 +108,9 @@ if __name__ == "__main__":
     dataset = listDataset(filepath, shape=(416,416), transform=transforms.ToTensor(), train=True, batch_size=8, num_workers=8)
     train_loader = torch.utils.data.DataLoader(dataset, batch_size = 8, shuffle=False, num_workers=8, pin_memory=True)
     idx, (img, label) = enumerate(train_loader).next()
+    label = label.float()
+    img = img.cuda()
+    net.cuda()
     reginLoss = RegionLoss(num_classes = 20, anchors=net.anchors, num_anchors=5)
     out = net(img)
     loss = reginLoss(out, label)
