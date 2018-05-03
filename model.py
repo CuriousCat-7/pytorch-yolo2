@@ -114,6 +114,7 @@ if __name__ == "__main__":
     reginLoss = RegionLoss(num_classes = 20, anchors=net.anchors, num_anchors=5)
     out = net(img)
     loss = reginLoss(out, label)
+    loss.backward()
     print loss
 
 

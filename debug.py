@@ -6,7 +6,9 @@ from torchvision import transforms
 import sys
 # todo:
 # acc
-# 
+# load weigth from darknet
+# understand region_loss
+# multi-gpu
 
 filepath = '/data/limingyao/data/VOC/voc_train.txt'
 save_name = '/data/limingyao/data/models/yolo.t7'
@@ -16,7 +18,8 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size = 8, shuffle=Fals
 net = DarkNet19()
 net.cuda()
 if sys.argv[1] == 'load':
-    net.load_static_dict(torch.load(save_name))
+    net.load_state_dict(torch.load(save_name))
+    print "net loaded"
 print net
 
 reginLoss = RegionLoss(num_classes = 20, anchors=net.anchors, num_anchors=5)
@@ -39,7 +42,7 @@ for epoch in xrange(15):
     ## eval in train
     pass
     # - save model
-    torch.save(net.static_dict(), save_name)
+    torch.save(net.state_dict(), save_name)
     print "model saved"
     # - print loss
     print 'loss {}, in ite {}'.format(loss, itx)
