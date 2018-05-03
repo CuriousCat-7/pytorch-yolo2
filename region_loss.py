@@ -114,7 +114,7 @@ class RegionLoss(nn.Module):
         self.seen = 0
 
     def forward(self, output, target):
-        #output : BxAs*(4+1+num_classes)*H*W
+        #output : B*As x (4+1+num_classes) x H x W
         t0 = time.time()
         nB = output.data.size(0)
         nA = self.num_anchors

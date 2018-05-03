@@ -94,7 +94,7 @@ class DarkNet19(nn.Module):
         #x = F.avg_pool2d(x, (img_size[0]/32, img_size[1]/32))
         #x = x.squeeze(-1).squeeze(-1)
         size = x.size()
-        x = x.view(size[0], self.num_anchors, -1, x.size[-2], x.size[-1])
+        x = x.view(size[0]*self.num_anchors, -1, size[-2], size[-1])
         return x
 
 
