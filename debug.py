@@ -45,4 +45,4 @@ for epoch in xrange(15):
     torch.save(net.state_dict(), save_name)
     print "model saved"
     # - print loss
-    print 'loss {}, in ite {}'.format(loss, itx)
+    print 'loss {}, in ite {}, epoch {}'.format(loss, itx, epoch)
